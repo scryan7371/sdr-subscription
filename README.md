@@ -55,30 +55,42 @@ const subscriptionClient = sdrSubscription.createSubscriptionClient({
 - This is Stripe-only by design.
 - Keep versions pinned in consumers.
 
-## Private Registry Publish (GitHub Packages)
+## Publish (npmjs)
 
-1. Set your token:
-
-```bash
-export GITHUB_PACKAGES_TOKEN=ghp_xxx
-```
-
-2. Publish:
-
-```bash
-npm publish
-```
-
-## Install From Any Environment
-
-1. Add auth to your consuming project's `.npmrc`:
+1. Configure project-local npm auth (`.npmrc`):
 
 ```ini
-@scryan7371:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
+registry=https://registry.npmjs.org/
+@scryan7371:registry=https://registry.npmjs.org/
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}
 ```
 
-2. Install a pinned version:
+2. Set token, bump version, and publish:
+
+```bash
+export NPM_TOKEN=xxxx
+npm version patch
+npm publish --access public --registry=https://registry.npmjs.org --userconfig .npmrc
+```
+
+3. Push commit and tags:
+
+```bash
+git push
+git push --tags
+```
+
+## CI Publish (GitHub Actions)
+
+Tag pushes like `sdr-subscription-v*` trigger `.github/workflows/publish.yml`.
+
+Required repo secret:
+
+- `NPM_TOKEN` (npm granular token with read/write + bypass 2FA for automation).
+
+## Install
+
+Install a pinned version:
 
 ```bash
 npm install @scryan7371/sdr-subscription@0.1.0
