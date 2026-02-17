@@ -66,6 +66,29 @@ const subscriptionClient = sdrSubscription.createSubscriptionClient({
 - This is Stripe-only by design.
 - Keep versions pinned in consumers.
 
+## Database Integration Tests
+
+Real database tests are available with:
+
+```bash
+npm run test:db
+```
+
+The test loader reads DB values from `.env.test` or `.env.dev` (current dir first, then project root), using either:
+
+- `SUBSCRIPTION_TEST_DATABASE_URL` (or fallback `DATABASE_URL`), or
+- component vars: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`.
+
+Debug schema helpers:
+
+```bash
+npm run test:db:keep
+npm run test:db:teardown
+```
+
+- `test:db:keep` keeps schema `sdr_subscription_it_debug` after the run.
+- `test:db:teardown` runs against the same schema and tears it down.
+
 ## Publish (npmjs)
 
 1. Configure project-local npm auth (`.npmrc`):

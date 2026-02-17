@@ -2,19 +2,24 @@ import "reflect-metadata";
 import { BadRequestException } from "@nestjs/common";
 import { describe, expect, it, vi } from "vitest";
 import type Stripe from "stripe";
+import { Repository } from "typeorm";
+import { SubscriptionEntity } from "./entities/subscription.entity";
 import { SubscriptionService } from "./subscription.service";
 
 const makeRepo = () => ({
   findOne: vi.fn(),
   create: vi.fn((value: unknown) => value),
   save: vi.fn((value: unknown) => Promise.resolve(value)),
-  find: vi.fn(async () => []),
+  find: vi.fn(async () => [] as unknown[]),
 });
 
 describe("SubscriptionService", () => {
   it("ignores unsupported stripe event types", async () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {});
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {},
+    );
 
     const event = {
       type: "invoice.created",
@@ -26,9 +31,12 @@ describe("SubscriptionService", () => {
 
   it("returns null for non-subscription checkout session", async () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {
-      stripeSecretKey: "sk_test",
-    });
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {
+        stripeSecretKey: "sk_test",
+      },
+    );
 
     await expect(
       service.handleStripeWebhook({
@@ -40,7 +48,10 @@ describe("SubscriptionService", () => {
 
   it("upserts subscription from stripe webhook", async () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {});
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {},
+    );
 
     const stripeSubscription = {
       id: "sub_123",
@@ -80,7 +91,10 @@ describe("SubscriptionService", () => {
 
   it("returns null when no user can be resolved", async () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {});
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {},
+    );
 
     repo.findOne.mockResolvedValue(null);
 
@@ -107,9 +121,12 @@ describe("SubscriptionService", () => {
 
   it("handles checkout session completed", async () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {
-      stripeSecretKey: "sk_test",
-    });
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {
+        stripeSecretKey: "sk_test",
+      },
+    );
 
     const retrievedSubscription = {
       id: "sub_from_checkout",
@@ -153,7 +170,10 @@ describe("SubscriptionService", () => {
 
   it("marks expired active subscription as canceled", async () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {});
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {},
+    );
 
     repo.findOne.mockResolvedValue({
       id: "sub_1",
@@ -171,7 +191,10 @@ describe("SubscriptionService", () => {
 
   it("returns active subscription when not expired", async () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {});
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {},
+    );
 
     const active = {
       id: "sub_1",
@@ -181,14 +204,17 @@ describe("SubscriptionService", () => {
     repo.findOne.mockResolvedValue(active);
 
     await expect(service.getUserActiveSubscription("user-1")).resolves.toBe(
-      active as never,
+      active,
     );
     expect(repo.save).not.toHaveBeenCalled();
   });
 
   it("returns history and active boolean", async () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {});
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {},
+    );
 
     repo.find.mockResolvedValue([{ id: "sub_1" }]);
     await expect(service.getUserSubscriptions("user-1")).resolves.toHaveLength(
@@ -207,9 +233,12 @@ describe("SubscriptionService", () => {
 
   it("throws when canceling missing or non-stripe subscription", async () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {
-      stripeSecretKey: "sk_test",
-    });
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {
+        stripeSecretKey: "sk_test",
+      },
+    );
 
     repo.findOne.mockResolvedValueOnce(null);
     await expect(service.cancelSubscription("missing")).rejects.toThrow(
@@ -227,9 +256,12 @@ describe("SubscriptionService", () => {
 
   it("throws when reactivating missing or non-stripe subscription", async () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {
-      stripeSecretKey: "sk_test",
-    });
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {
+        stripeSecretKey: "sk_test",
+      },
+    );
 
     repo.findOne.mockResolvedValueOnce(null);
     await expect(service.reactivateSubscription("missing")).rejects.toThrow(
@@ -247,9 +279,12 @@ describe("SubscriptionService", () => {
 
   it("cancels and reactivates stripe subscription", async () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {
-      stripeSecretKey: "sk_test",
-    });
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {
+        stripeSecretKey: "sk_test",
+      },
+    );
 
     repo.findOne.mockResolvedValue({
       id: "sub_3",
@@ -319,9 +354,12 @@ describe("SubscriptionService", () => {
 
   it("constructs webhook event when configuration exists", () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {
-      stripeWebhookSecret: "whsec_test",
-    });
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {
+        stripeWebhookSecret: "whsec_test",
+      },
+    );
 
     const constructEvent = vi.fn().mockReturnValue({ id: "evt_1" });
     (
@@ -348,7 +386,10 @@ describe("SubscriptionService", () => {
 
   it("validates missing webhook configuration", () => {
     const repo = makeRepo();
-    const service = new SubscriptionService(repo as never, {});
+    const service = new SubscriptionService(
+      repo as unknown as Repository<SubscriptionEntity>,
+      {},
+    );
 
     expect(() =>
       service.constructStripeWebhookEvent(Buffer.from("x"), "sig"),

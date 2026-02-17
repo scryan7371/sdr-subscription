@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { AdminSubscriptionController } from "./admin-subscription.controller";
+import { SubscriptionService } from "./subscription.service";
 
 const makeService = () => ({
   cancelSubscription: vi.fn(),
@@ -9,7 +10,9 @@ const makeService = () => ({
 describe("AdminSubscriptionController", () => {
   it("cancels and reactivates subscriptions", async () => {
     const service = makeService();
-    const controller = new AdminSubscriptionController(service as never);
+    const controller = new AdminSubscriptionController(
+      service as unknown as SubscriptionService,
+    );
 
     service.cancelSubscription.mockResolvedValue({
       id: "sub-1",
