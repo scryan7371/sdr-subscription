@@ -1,13 +1,13 @@
-export type SubscriptionProvider = 'stripe';
+export type SubscriptionProvider = "stripe";
 
 export type SubscriptionStatus =
-  | 'active'
-  | 'canceled'
-  | 'past_due'
-  | 'trialing'
-  | 'incomplete'
-  | 'incomplete_expired'
-  | 'paused';
+  | "active"
+  | "canceled"
+  | "past_due"
+  | "trialing"
+  | "incomplete"
+  | "incomplete_expired"
+  | "paused";
 
 export type SubscriptionSummary = {
   id: string;
@@ -32,7 +32,7 @@ export type AdminUpdateSubscriptionResponse = {
   success: true;
   subscription: Pick<
     SubscriptionSummary,
-    'id' | 'status' | 'cancelAtPeriodEnd' | 'canceledAt'
+    "id" | "status" | "cancelAtPeriodEnd" | "canceledAt"
   >;
 };
 

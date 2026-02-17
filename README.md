@@ -8,24 +8,35 @@ This package is intentionally split into two surfaces:
 
 - `api`: shared domain contracts + Stripe status mapping helpers.
 - `app`: typed client for subscription endpoints used by mobile/web app frontends.
+- `nest`: reusable Nest module/service/controllers/entity for API projects.
 
 ## Package Layout
 
 - `src/api/contracts.ts`: canonical request/response and status/provider types.
 - `src/api/stripe.ts`: Stripe-to-domain status mapping.
 - `src/app/client.ts`: client methods for user/admin subscription API calls.
+- `src/nest/*`: Nest module + service + controllers + entity for subscription operations.
 
 ## API Integration (Nest)
 
 In your API project:
 
-1. Reuse exported types from `sdr-subscription/src/api/contracts.ts` in controllers.
-2. Reuse `mapStripeStatus` from `sdr-subscription/src/api/stripe.ts` in Stripe webhook/service logic.
-3. Keep project-specific concerns local:
-   - persistence (TypeORM entities/repositories)
-   - auth/guards
-   - Stripe SDK client instantiation
-   - webhook signature verification
+1. Import the shared Nest surface:
+
+```ts
+import { SubscriptionModule } from "@scryan7371/sdr-subscription/nest";
+```
+
+2. Register it in your API module:
+
+```ts
+SubscriptionModule.forRoot({
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+});
+```
+
+3. Apply your app-specific guards/auth policies in your API app where needed.
 
 ## App Integration (React Native / Web)
 
@@ -34,7 +45,7 @@ In your app project:
 1. Build client once:
 
 ```ts
-import { app as sdrSubscription } from '@scryan7371/sdr-subscription';
+import { app as sdrSubscription } from "@scryan7371/sdr-subscription";
 
 const subscriptionClient = sdrSubscription.createSubscriptionClient({
   baseUrl,
@@ -79,6 +90,28 @@ npm publish --access public --registry=https://registry.npmjs.org --userconfig .
 git push
 git push --tags
 ```
+
+## Release Process
+
+Use the built-in release scripts (recommended):
+
+```bash
+npm run release:patch
+npm run release:minor
+npm run release:major
+```
+
+Each release script:
+
+1. Validates git working tree is clean.
+2. Runs tests.
+3. Builds the package.
+4. Bumps `package.json`/`package-lock.json`.
+5. Commits as `chore(release): vX.Y.Z`.
+6. Creates tag `sdr-subscription-vX.Y.Z`.
+7. Pushes commit and tag.
+
+Tag pushes (`sdr-subscription-v*`) trigger publish workflow in GitHub Actions.
 
 ## CI Publish (GitHub Actions)
 

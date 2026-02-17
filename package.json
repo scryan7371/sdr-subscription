@@ -4,7 +4,8 @@
   "description": "Reusable Stripe-only subscription capability for API and app clients.",
   "main": "dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./nest": "./dist/nest/index.js"
   },
   "types": "dist/index.d.ts",
   "publishConfig": {
@@ -19,16 +20,50 @@
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build",
+    "lint": "eslint \"src/**/*.ts\"",
+    "prettier": "prettier --write \"src/**/*.ts\" \"README.md\"",
     "test": "vitest run",
-    "test:cov": "vitest run --coverage"
+    "test:cov": "vitest run --coverage",
+    "release:patch": "bash ./scripts/release.sh patch",
+    "release:minor": "bash ./scripts/release.sh minor",
+    "release:major": "bash ./scripts/release.sh major"
   },
   "devDependencies": {
+    "@nestjs/common": "11.1.14",
+    "@nestjs/swagger": "11.2.6",
+    "@nestjs/typeorm": "11.0.0",
+    "@types/express": "5.0.6",
     "@types/node": "^25.2.3",
     "@vitest/coverage-v8": "^4.0.18",
+    "eslint": "9.18.0",
+    "prettier": "3.8.1",
+    "typeorm": "0.3.28",
     "typescript": "5.9.3",
+    "typescript-eslint": "8.56.0",
     "vitest": "4.0.18"
   },
   "dependencies": {
-    "@babel/runtime": "^7.28.6"
+    "@babel/runtime": "7.28.6",
+    "stripe": "20.3.1"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/swagger": "^11.0.0",
+    "@nestjs/typeorm": "^11.0.0",
+    "typeorm": "^0.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@nestjs/common": {
+      "optional": true
+    },
+    "@nestjs/swagger": {
+      "optional": true
+    },
+    "@nestjs/typeorm": {
+      "optional": true
+    },
+    "typeorm": {
+      "optional": true
+    }
   }
 }

@@ -2,7 +2,7 @@ import type {
   AdminUpdateSubscriptionResponse,
   SubscriptionHistoryResponse,
   SubscriptionStatusResponse,
-} from '../api/contracts';
+} from "../api/contracts";
 
 type FetchLike = typeof fetch;
 
@@ -20,7 +20,7 @@ export const createSubscriptionClient = (
   const request = async <T>(path: string, init?: RequestInit): Promise<T> => {
     const token = options.getAccessToken();
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...(init?.headers ? (init.headers as Record<string, string>) : {}),
     };
 
@@ -38,7 +38,7 @@ export const createSubscriptionClient = (
 
     if (!response.ok) {
       const message =
-        typeof body?.message === 'string'
+        typeof body?.message === "string"
           ? body.message
           : `Request failed: ${response.status}`;
       throw new Error(message);
@@ -49,16 +49,16 @@ export const createSubscriptionClient = (
 
   return {
     getMySubscriptionStatus: () =>
-      request<SubscriptionStatusResponse>('/subscriptions/status'),
+      request<SubscriptionStatusResponse>("/subscriptions/status"),
 
     getMySubscriptions: () =>
-      request<SubscriptionHistoryResponse>('/subscriptions/history'),
+      request<SubscriptionHistoryResponse>("/subscriptions/history"),
 
     cancelMySubscription: (subscriptionId: string) =>
       request<AdminUpdateSubscriptionResponse>(
         `/subscriptions/${subscriptionId}/cancel`,
         {
-          method: 'POST',
+          method: "POST",
         },
       ),
 
@@ -66,7 +66,7 @@ export const createSubscriptionClient = (
       request<AdminUpdateSubscriptionResponse>(
         `/admin/subscriptions/${subscriptionId}/cancel`,
         {
-          method: 'PATCH',
+          method: "PATCH",
         },
       ),
 
@@ -74,7 +74,7 @@ export const createSubscriptionClient = (
       request<AdminUpdateSubscriptionResponse>(
         `/admin/subscriptions/${subscriptionId}/reactivate`,
         {
-          method: 'PATCH',
+          method: "PATCH",
         },
       ),
   };

@@ -45,6 +45,40 @@ describe("createSubscriptionClient", () => {
     await expect(client.getMySubscriptions()).rejects.toThrow("Forbidden");
   });
 
+  it("falls back to status-based error when message is missing", async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: false,
+      status: 500,
+      text: async () => JSON.stringify({}),
+    }));
+
+    const client = createSubscriptionClient({
+      baseUrl: "https://api.example.com",
+      getAccessToken: () => null,
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    });
+
+    await expect(client.getMySubscriptionStatus()).rejects.toThrow(
+      "Request failed: 500",
+    );
+  });
+
+  it("handles empty response body", async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      text: async () => "",
+    }));
+
+    const client = createSubscriptionClient({
+      baseUrl: "https://api.example.com",
+      getAccessToken: () => null,
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    });
+
+    const result = await client.getMySubscriptions();
+    expect(result).toEqual({});
+  });
+
   it("uses correct admin routes and HTTP methods", async () => {
     const fetchImpl = vi.fn(async () => ({
       ok: true,
