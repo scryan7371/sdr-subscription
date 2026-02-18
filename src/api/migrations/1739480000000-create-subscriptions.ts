@@ -9,25 +9,26 @@ export class CreateSubscriptions1739480000000 {
     await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
 
     await queryRunner.query(`
-      CREATE TABLE "subscription" (
-        "id" uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
-        "user_id" varchar NOT NULL,
-        "provider" varchar NOT NULL,
-        "provider_subscription_id" varchar NOT NULL UNIQUE,
-        "provider_customer_id" varchar,
-        "provider_price_id" varchar,
-        "status" varchar NOT NULL,
-        "current_period_start" timestamp,
-        "current_period_end" timestamp,
-        "cancel_at_period_end" boolean NOT NULL DEFAULT false,
-        "canceled_at" timestamp,
-        "trial_start" timestamp,
-        "trial_end" timestamp,
-        "metadata" jsonb,
-        "created_at" timestamp NOT NULL DEFAULT now(),
-        "updated_at" timestamp NOT NULL DEFAULT now(),
-        CONSTRAINT "FK_subscription_user_id" FOREIGN KEY ("user_id") REFERENCES ${userTableRef} ("id") ON DELETE CASCADE
-      )
+        CREATE TABLE "subscription"
+        (
+            "id"                       uuid PRIMARY KEY NOT NULL DEFAULT uuidv7(),
+            "user_id"                  uuid             NOT NULL,
+            "provider"                 varchar          NOT NULL,
+            "provider_subscription_id" varchar          NOT NULL UNIQUE,
+            "provider_customer_id"     varchar,
+            "provider_price_id"        varchar,
+            "status"                   varchar          NOT NULL,
+            "current_period_start"     timestamp,
+            "current_period_end"       timestamp,
+            "cancel_at_period_end"     boolean          NOT NULL DEFAULT false,
+            "canceled_at"              timestamp,
+            "trial_start"              timestamp,
+            "trial_end"                timestamp,
+            "metadata"                 jsonb,
+            "created_at"               timestamp        NOT NULL DEFAULT now(),
+            "updated_at"               timestamp        NOT NULL DEFAULT now(),
+            CONSTRAINT "FK_subscription_user_id" FOREIGN KEY ("user_id") REFERENCES ${userTableRef} ("id") ON DELETE CASCADE
+        )
     `);
 
     await queryRunner.query(
