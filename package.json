@@ -1,6 +1,6 @@
 {
   "name": "@scryan7371/sdr-subscription",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Reusable Stripe-only subscription capability for API and app clients.",
   "main": "dist/index.js",
   "exports": {
