@@ -5,7 +5,10 @@
   "main": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
-    "./nest": "./dist/nest/index.js"
+    "./nest": {
+      "types": "./dist/nest/index.d.ts",
+      "default": "./dist/nest/index.js"
+    }
   },
   "types": "dist/index.d.ts",
   "publishConfig": {
@@ -69,6 +72,13 @@
     },
     "typeorm": {
       "optional": true
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "nest": [
+        "dist/nest/index.d.ts"
+      ]
     }
   }
 }
