@@ -6,8 +6,6 @@ export class CreateSubscriptions1739480000000 {
   }): Promise<void> {
     const userTableRef = getUserTableReference();
 
-    await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
-
     await queryRunner.query(`
         CREATE TABLE "subscription"
         (
